@@ -33,13 +33,17 @@ public partial class ListCategoriesPage : ComponentBase
 
     protected override async Task OnInitializedAsync()
     {
-        IsBusy = true;
+         IsBusy = true;
         try
         {
             var request = new GetAllCategoriesRequest();
             var result = await Handler.GetAllAsync(request);
-            if (result.IsSuccess)
+            if (result.IsSuccess && result.Data != null && result.Data.Any())
+            {
+                Categories = new List<Category>();
                 Categories.AddRange(result.Data);
+             }
+                
         }
         catch (Exception ex)
         {

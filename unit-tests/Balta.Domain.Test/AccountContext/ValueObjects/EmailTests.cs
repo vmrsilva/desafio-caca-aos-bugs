@@ -12,7 +12,7 @@ public class EmailTests
     [InlineData("Fake@EmaiL.COM", "fake@email.com")]
     public void ShouldLowerCaseEmail(string email, string expectedEmail)
     {
-        var fakeDate = DateTimeProviderFake.Create();
+        var fakeDate = FakeDateTimeProvider.Default;
 
         var result = Email.ShouldCreate(email, fakeDate);
 
@@ -25,7 +25,7 @@ public class EmailTests
     [InlineData("fake@email.com ", "fake@email.com")]
     public void ShouldTrimEmail(string email, string expectedEmail)
     {
-        var fakeDate = DateTimeProviderFake.Create();
+        var fakeDate = FakeDateTimeProvider.Default;
 
         var result = Email.ShouldCreate(email, fakeDate);
 
@@ -35,7 +35,7 @@ public class EmailTests
     [Fact(DisplayName = "Should Fail If Email Is Null")]
     public void ShouldFailIfEmailIsNull()
     {
-        var fakeDate = DateTimeProviderFake.Create();
+        var fakeDate = FakeDateTimeProvider.Default;
 
         string fakeEmail = null;
 
@@ -45,7 +45,7 @@ public class EmailTests
     [Fact(DisplayName = "Should Fail If Email Is Empty")]
     public void ShouldFailIfEmailIsEmpty()
     {
-        var fakeDate = DateTimeProviderFake.Create();
+        var fakeDate = FakeDateTimeProvider.Default;
 
         string fakeEmail = string.Empty;
 
@@ -59,7 +59,7 @@ public class EmailTests
     [InlineData("fake!email.com")]
     public void ShouldFailIfEmailIsInvalid(string fakeEmail)
     {
-        var fakeDate = DateTimeProviderFake.Create();
+        var fakeDate = FakeDateTimeProvider.Default;
 
         Assert.Throws<InvalidEmailException>(() => Email.ShouldCreate(fakeEmail, fakeDate));
     }
@@ -72,7 +72,7 @@ public class EmailTests
     [InlineData("teste@hotmail.com.ar")]
     public void ShouldPassIfEmailIsValid(string fakeEmail)
     {
-        var fakeDate = DateTimeProviderFake.Create();
+        var fakeDate = FakeDateTimeProvider.Default;
 
         var result = Email.ShouldCreate(fakeEmail, fakeDate);
 
@@ -85,7 +85,7 @@ public class EmailTests
     [InlineData("test@fakemail.com.br")]
     public void ShouldHashEmailAddress(string fakeEmail)
     {
-        var fakeDate = DateTimeProviderFake.Create();
+        var fakeDate = FakeDateTimeProvider.Default;
         var expectedHash = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(fakeEmail));
 
         var result = Email.ShouldCreate(fakeEmail, fakeDate);
@@ -96,7 +96,7 @@ public class EmailTests
     [Fact(DisplayName = "Should Explicit Convert From String")]
     public void ShouldExplicitConvertFromString()
     {
-        var fakeDate = DateTimeProviderFake.Create();
+        var fakeDate = FakeDateTimeProvider.Default;
 
         var fakeEmail = "fake@email.com";
         var result = Email.ShouldCreate(fakeEmail, fakeDate);
@@ -109,7 +109,7 @@ public class EmailTests
     [Fact(DisplayName = "Should Explicit Convert To String")]
     public void ShouldExplicitConvertToString()
     {
-        var fakeDate = DateTimeProviderFake.Create();
+        var fakeDate = FakeDateTimeProvider.Default;
 
         var fakeEmail = "fake@email.com";
         var result = Email.ShouldCreate(fakeEmail, fakeDate);
@@ -122,7 +122,7 @@ public class EmailTests
     [Fact(DisplayName = "ShouldReturn Email When Call To String Method")]
     public void ShouldReturnEmailWhenCallToStringMethod()
     {
-        var fakeDate = DateTimeProviderFake.Create();
+        var fakeDate = FakeDateTimeProvider.Default;
 
         var fakeEmail = "fake@email.com";
         var result = Email.ShouldCreate(fakeEmail, fakeDate);

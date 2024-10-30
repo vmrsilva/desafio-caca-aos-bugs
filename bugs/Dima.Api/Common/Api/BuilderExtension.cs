@@ -21,6 +21,8 @@ public static class BuilderExtension
             ?? string.Empty;
         Configuration.BackendUrl = builder.Configuration.GetValue<string>("BackendUrl") ?? string.Empty;
         Configuration.FrontendUrl = builder.Configuration.GetValue<string>("FrontendUrl") ?? string.Empty;
+        Configuration.BackendUrlHttps = builder.Configuration.GetValue<string>("BackendUrlHttps") ?? string.Empty;
+        Configuration.FrontendUrlHttps = builder.Configuration.GetValue<string>("FrontendUrlHttps") ?? string.Empty;
         ApiConfiguration.StripeApiKey = builder.Configuration.GetValue<string>("StripeApiKey") ?? string.Empty;
 
         StripeConfiguration.ApiKey = ApiConfiguration.StripeApiKey;
@@ -62,7 +64,9 @@ public static class BuilderExtension
                 policy => policy
                     .WithOrigins([
                         Configuration.BackendUrl,
-                        Configuration.FrontendUrl
+                        Configuration.FrontendUrl,
+                        Configuration.BackendUrlHttps,
+                        Configuration.FrontendUrlHttps
                     ])
                     .AllowAnyMethod()
                     .AllowAnyHeader()

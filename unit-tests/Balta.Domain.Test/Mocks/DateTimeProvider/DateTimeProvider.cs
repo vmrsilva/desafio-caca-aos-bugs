@@ -8,17 +8,9 @@ using System.Threading.Tasks;
 
 namespace Balta.Domain.Test.Mocks.DateTimeProvider
 {
-    public static class DateTimeProviderFake
+    internal class DateTimeProvider
+    : IDateTimeProvider
     {
-        public static IDateTimeProvider Create(DateTime? dateTime = null)
-        {
-            var dateTimeProviderFake = A.Fake<IDateTimeProvider>();
-
-            var dateTimeUtcNow = dateTime?.ToUniversalTime() ?? DateTime.UtcNow;
-
-            A.CallTo(() => dateTimeProviderFake.UtcNow).Returns(dateTimeUtcNow);
-
-            return dateTimeProviderFake;
-        }
+        public DateTime UtcNow => DateTime.UtcNow;
     }
 }

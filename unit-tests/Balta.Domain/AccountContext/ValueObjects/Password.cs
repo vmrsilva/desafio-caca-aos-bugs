@@ -1,6 +1,8 @@
 using System.Security.Cryptography;
 using Balta.Domain.AccountContext.ValueObjects.Exceptions;
+using Balta.Domain.SharedContext.Abstractions;
 using Balta.Domain.SharedContext.ValueObjects;
+using Balta.Domain.AccountContext.Providers;
 
 namespace Balta.Domain.AccountContext.ValueObjects;
 
@@ -8,6 +10,7 @@ public record Password : ValueObject
 {
     #region Constants
 
+    private const int DefaultExpirationInMinutes = 5;
     private const int MinLength = 8;
     private const int MaxLength = 48;
     private const string Valid = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
@@ -17,11 +20,14 @@ public record Password : ValueObject
 
     #region Constructors
 
-    private Password(string hash)
+    private Password(
+        string hash,
+        DateTime? expiresAtUtc,
+        IDateTimeProvider provider)
     {
         Hash = hash;
-        ExpiresAtUtc = null;
-        MustChange = false;
+        ExpiresAtUtc = expiresAtUtc;
+        _provider = provider;
     }
 
     #endregion
@@ -29,7 +35,14 @@ public record Password : ValueObject
     #region Factories
 
     public static Password ShouldCreate(string plainText)
+        => ShouldCreate(plainText, provider: null);
+
+    public static Password ShouldCreate(
+        string plainText,
+        IDateTimeProvider? provider)
     {
+        provider = provider ?? DateTimeProvider.Default;
+
         if (string.IsNullOrEmpty(plainText))
             throw new InvalidPasswordException("Password cannot be null or empty");
 
@@ -43,8 +56,11 @@ public record Password : ValueObject
             throw new InvalidPasswordException($"Password should have less than {MaxLength} characters");
 
         var hash = ShouldHashPassword(plainText);
-        
-        return new Password(hash);
+
+        return new Password(
+            hash,
+            expiresAtUtc: provider.UtcNow.Add(TimeSpan.FromMinutes(DefaultExpirationInMinutes)),
+            provider: provider);
     }
 
     #endregion
@@ -53,11 +69,26 @@ public record Password : ValueObject
 
     public string Hash { get; }
     public DateTime? ExpiresAtUtc { get; }
-    public bool MustChange { get; }
+    public bool MustChange => IsExpired();
+
+    private readonly IDateTimeProvider _provider;
 
     #endregion
 
     #region Public Methods
+
+    /// <summary>
+    /// Method checks if the password is expired by <see cref="ExpiresAtUtc"/>.
+    /// </summary>
+    /// <returns></returns>
+    public bool IsExpired()
+    {
+        if (ExpiresAtUtc is null ||
+            ExpiresAtUtc < _provider.UtcNow)
+            return true;
+
+        return false;
+    }
 
     public static string ShouldGenerate(
         short length = 16,
